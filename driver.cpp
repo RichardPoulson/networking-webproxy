@@ -1,4 +1,5 @@
 #include "webserver.h"
+#include "webproxy.h"
 
 int main(int argc, char **argv) {
   if (argc != 2) {
@@ -8,5 +9,6 @@ int main(int argc, char **argv) {
       "as argument." << endl;
       exit(EXIT_FAILURE);
   }
-  WebServer myServer(atoi(argv[1])); // first argument is string rep. of num.
+  WebProxy myWebProxy(atoi(argv[1]), atoi(argv[2]));
+  WebServer myServer(8007); // first argument is string rep. of num.
 }

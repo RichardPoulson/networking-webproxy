@@ -1,5 +1,5 @@
-NAME=webserver
-DEPENDENCIES=webserver.cpp
+NAME=webproxy
+DEPENDENCIES=driver.cpp webserver.cpp webproxy.cpp
 #  Compiler to use (gcc / g++)
 COMPILER=g++
 #  MinGW
@@ -22,19 +22,19 @@ CLEAN=rm -f $(NAME) *.o *.a
 endif
 
 #== Compile and link (customize name at top of makefile)
-$(NAME) : driver.cpp $(DEPENDENCIES)
+$(NAME) : $(DEPENDENCIES)
 	$(COMPILER) $(CFLG) -o $(NAME) $^ $(LIBS)
 
 #== Clean
 clean :
 	$(CLEAN)
 
-#== Run: test compiled binary file with argument  
+#== Run: test compiled binary file with argument
 test : $(NAME)
-	./$(NAME) 8888
+	./$(NAME) 8888 &
 
 #== Recycle: remove made files, compile, then run test recipe
-recycle : $(NAME).cpp $(DEPENDENCIES)
+recycle : $(DEPENDENCIES)
 	$(CLEAN)
 	$(MAKE)
 	$(MAKE) test # Run the compiled binary file

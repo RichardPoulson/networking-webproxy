@@ -1,8 +1,27 @@
-#include "webserver.h"
+#include "webproxy.h"
 
-//== WEBSERVER CLASS DEFINITIONS
+#include <stddef.h> // NULL, nullptr_t
+#include <stdio.h> // FILE, size_t, fopen, fclose, fread, fwrite,
+#include <iostream> // cout
+#include <fstream> // ifstream
+#include <signal.h> // signal(int void (*func)(int))
+#include <unistd.h>
+#include <stdlib.h> //  exit, EXIT_FAILURE, EXIT_SUCCESS
+#include <string.h> //  strlen, strcpy, strcat, strcmp
+#include <netdb.h>
+#include <sys/types.h>
+#include <sys/socket.h> //  socklen_t,
+#include <netinet/in.h> //  sockaddr_in, INADDR_ANY,
+#include <arpa/inet.h> //  htonl, htons, inet_ntoa,
+#include <dirent.h> //  "Traverse directory", opendir, readdir,
+#include <errno.h> //  "C Errors", errno
+#include <regex> //  Regular expressions
+#include <pthread.h> // process threads,
+#include <time.h> //  time_t, tm,
+#include <stack> //  stack of process threads
+
 // CONSTRUCTOR
-WebServer::WebServer(unsigned short portNumber){
+WebProxy::WebProxy(unsigned short portNumber){
   Initialize();
   this->portNum = portNumber;
   if (CreateSocket() != true) { exit(EXIT_FAILURE); }
@@ -10,7 +29,7 @@ WebServer::WebServer(unsigned short portNumber){
   StartHTTPService(); // forever loop, program has to receive SIGINT to exit
 }
 // StartHTTPService
-void WebServer::StartHTTPService()
+void WebProxy::StartHTTPService()
 {
   std::cout << "Starting HTTP Service..." << std::endl;
   while(proceed == true) {
@@ -23,7 +42,7 @@ void WebServer::StartHTTPService()
   }
 }
 // CreateSocket
-bool WebServer::CreateSocket()
+bool WebProxy::CreateSocket()
 {
   //  0= pick any protocol that socket type supports, can also use IPPROTO_TCP
   sharedResources->sock = socket(AF_INET, SOCK_STREAM, 0);
@@ -43,7 +62,7 @@ bool WebServer::CreateSocket()
   return true;
 }
 // BindSocket, bind parent socket to port, returns false if bind unsuccessful
-bool WebServer::BindSocket()
+bool WebProxy::BindSocket()
 {
   // bind: associate the parent socket with a port
   if (bind(sharedResources->sock, (struct sockaddr *)&serverAddr, sizeof(serverAddr)) < 0) {
@@ -53,7 +72,7 @@ bool WebServer::BindSocket()
   return true;
 }
 // Initialize
-void WebServer::Initialize() {
+void WebProxy::Initialize() {
   signal(SIGINT, SignalHandler); // register handler for SIGINT
   sharedResources = new struct PThreadResources; // shared resources for threads
   pthread_mutex_init(&sharedResources->sock_mx, NULL);
@@ -65,7 +84,7 @@ void WebServer::Initialize() {
     "^(GET|HEAD|POST) (\\/|(\\/.*)+\\.(html|txt|png|gif|jpg|css|js)) HTTP\\/\\d\\.\\d\r\n");
 }
 // DESTRUCTOR
-WebServer::~WebServer(){
+WebProxy::~WebProxy(){
   std::cout << "Closing TCP sockets..." << std::endl;
   close(sharedResources->sock);
   pthread_mutex_destroy(&sharedResources->sock_mx);
@@ -78,7 +97,7 @@ WebServer::~WebServer(){
 void * AcceptConnection(void * sharedResources) {
   // This struct contains mutexes, conditionVars,
   struct PThreadResources * shared = (struct PThreadResources*)sharedResources;
-  char * buffer = new char[BUFFER_SIZE];
+  char * buffer = new char[WEBPROXY_BUFFER_SIZE];
   char path[256] = "./www"; // all files should be hosted from www folder
   int clientSocket;
   struct sockaddr_in clientAddr; // client addr
@@ -100,7 +119,7 @@ void * AcceptConnection(void * sharedResources) {
     pthread_exit(NULL);
   }
   //== receive and verify request message ====
-  memset(buffer, 0, BUFFER_SIZE);
+  memset(buffer, 0, WEBPROXY_BUFFER_SIZE);
   numBytes = ReceiveMessage(clientSocket, buffer, shared);
   //== UPDATE REQUEST MEMBER VALUES WITH REGEX
   InitReqRecStructs(buffer, request, response);
@@ -115,7 +134,7 @@ void * AcceptConnection(void * sharedResources) {
   fileBufPoint->pubseekpos(0,shared->ifs.in); // go back to beginning
   if (numBytes < 0)
     perror("unable to get file size");
-  bzero(buffer, BUFFER_SIZE);
+  bzero(buffer, WEBPROXY_BUFFER_SIZE);
   strcpy(buffer, request->httpVersion);
   strcat(buffer, " 200 OK\r\n");
   DateTimeRFC(buffer);
@@ -140,7 +159,7 @@ size_t ReceiveMessage(int sock, char * buf, struct PThreadResources * shared) {
   size_t numBytes;
   cmatch match1; // since buffer is char*, need cmatch instead of smatch
 
-  numBytes = recv(sock, buf, BUFFER_SIZE, 0);
+  numBytes = recv(sock, buf, WEBPROXY_BUFFER_SIZE, 0);
   if ((int)numBytes < 0) {
     pthread_mutex_unlock(&shared->sock_mx); //== UNLOCK
     perror("ERROR in recvfrom");

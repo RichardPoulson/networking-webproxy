@@ -2,7 +2,7 @@
  * @author Richard Poulson
  * @date 6 Oct 2018
  *
- * WebServer object:
+ * WebProxy object:
  * - receives HTTP requests, parses and verifies the data.
  *
  * @references:
@@ -13,37 +13,17 @@
  */
 
 // if buffer is larger than ~ 200KB, may have to put buffers in heap (dynamic)
-#define BUFFER_SIZE 1048576 // Size of buffers, in bytes (1MB)
-#define NUM_CONNECTION_THREADS 8 // maximum number of client connections
+#ifndef WEBPROXY_H_
+#define WEBPROXY_H_
 
-#include <stddef.h> // NULL, nullptr_t
-#include <stdio.h> // FILE, size_t, fopen, fclose, fread, fwrite,
-#include <iostream> // cout
-#include <fstream> // ifstream
-#include <signal.h> // signal(int void (*func)(int))
-#include <unistd.h>
-#include <stdlib.h> //  exit, EXIT_FAILURE, EXIT_SUCCESS
-#include <string.h> //  strlen, strcpy, strcat, strcmp
-#include <netdb.h>
-#include <sys/types.h>
-#include <sys/socket.h> //  socklen_t,
-#include <netinet/in.h> //  sockaddr_in, INADDR_ANY,
-#include <arpa/inet.h> //  htonl, htons, inet_ntoa,
-#include <dirent.h> //  "Traverse directory", opendir, readdir,
-#include <errno.h> //  "C Errors", errno
-#include <regex> //  Regular expressions
-#include <pthread.h> // process threads,
-#include <time.h> //  time_t, tm,
-#include <stack> //  stack of process threads
+#define WEBPROXY_BUFFER_SIZE 1048576 // Size of buffers, in bytes (1MB)
+#define WEBPROXY_NUM_CONNECTION_THREADS 8 // maximum number of client connections
 
 using namespace std;
 
-static volatile bool proceed = true;
-
-void SignalHandler(int signal); // signal handler for WebServer class
+void SignalHandler(int signal); // signal handler for WebProxy class
 void DateTimeRFC(char * buf); // append date and time (RFC 822) to buffer
 size_t ReceiveMessage(int, char *, struct PThreadResources *);
-
 void InitReqRecStructs(char*, struct RequestMessage*, struct ResponseMessage*);
 void * AcceptConnection(void * sharedResources); // PThread function, services clients
 
@@ -72,15 +52,18 @@ struct PThreadResources {
   //struct dirent *dir;
   regex httpHeaderRegex; // checks HTTP method, URI, and HTTP version
 };
-//== WebServer, object contains parent sockets, pthreads create client socket
-class WebServer
+//== WebProxy, object contains parent sockets, pthreads create client socket
+class WebProxy
 {
 public:
-  WebServer(unsigned short portNumber);
-  ~WebServer();
+  WebProxy(unsigned short portNumber, );
+  ~WebProxy();
+protected:
+  
 private:
+  bool proceed = true;
   struct PThreadResources * sharedResources;
-  pthread_t httpConnections[NUM_CONNECTION_THREADS];
+  pthread_t httpConnections[WEBPROXY_NUM_CONNECTION_THREADS];
   unsigned short portNum; // port to listen on
   struct sockaddr_in serverAddr; // server's addr
   int optval; // flag value for setsockopt
@@ -91,3 +74,4 @@ private:
   void StartHTTPService();
   void StopHTTPService();
 };
+#endif  // WEBPROXY_H_
