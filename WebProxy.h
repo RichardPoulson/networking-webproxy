@@ -6,12 +6,12 @@ class WebProxy
 public:
 	WebProxy();
 	virtual ~WebProxy();
+	const static int get_max_num_threads();
 private:
 	bool http_service_enabled;
 	// Maximum number of threads used to service HTTP clients.
 	static const int kMaxNumThreads = 8;
-public:
-	const static int get_max_num_threads();
+	static const int kBufferSize = 16777216; // 16MB
 protected:
 	// Listen for HTTP requests from network hosts
 	bool ListenHTTPClients();

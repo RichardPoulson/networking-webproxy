@@ -9,13 +9,6 @@ WebProxy::~WebProxy()
 {
 }
 
-
-const int WebProxy::get_max_num_threads()
-{
-	return WebProxy::kMaxNumThreads;
-}
-
-
 // Listen for HTTP requests from network hosts
 bool WebProxy::ListenHTTPClients()
 {
