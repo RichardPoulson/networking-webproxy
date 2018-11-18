@@ -12,8 +12,8 @@
  *   http://www.cplusplus.com/reference/fstream/basic_ifstream/rdbuf/
  */
 
- #ifndef NETWORKING_WEBSERVER_H_
- #define NETWORKING_WEBSERVER_H_
+ #ifndef NETWORKING_WEBPROXY_WEBSERVER_H_
+ #define NETWORKING_WEBPROXY_WEBSERVER_H_
 
 // if buffer is larger than ~ 200KB, may have to put buffers in heap (dynamic)
 #define BUFFER_SIZE 1048576 // Size of buffers, in bytes (1MB)
@@ -94,4 +94,4 @@ private:
   void StartHTTPService();
   void StopHTTPService();
 };
-#endif  // NETWORKING_WEBSERVER_H_
+#endif  // NETWORKING_WEBPROXY_WEBSERVER_H_

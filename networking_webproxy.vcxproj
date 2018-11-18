@@ -101,9 +101,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="driver.cpp" />
+    <ClCompile Include="WebProxy.cpp" />
     <ClCompile Include="webserver.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="WebProxy.h" />
     <ClInclude Include="webserver.h" />
   </ItemGroup>
   <ItemGroup>
