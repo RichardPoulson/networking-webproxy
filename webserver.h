@@ -1,6 +1,6 @@
 /*
  * @author Richard Poulson
- * @date 6 Oct 2018
+ * @date 12 Nov 2018
  *
  * WebServer object:
  * - receives HTTP requests, parses and verifies the data.
@@ -11,6 +11,9 @@
  *   https://stackoverflow.com/questions/4250013/is-destructor-called-if-sigint-or-sigstp-issued
  *   http://www.cplusplus.com/reference/fstream/basic_ifstream/rdbuf/
  */
+
+ #ifndef NETWORKING_WEBSERVER_H_
+ #define NETWORKING_WEBSERVER_H_
 
 // if buffer is larger than ~ 200KB, may have to put buffers in heap (dynamic)
 #define BUFFER_SIZE 1048576 // Size of buffers, in bytes (1MB)
@@ -91,3 +94,4 @@ private:
   void StartHTTPService();
   void StopHTTPService();
 };
+#endif  // NETWORKING_WEBSERVER_H_

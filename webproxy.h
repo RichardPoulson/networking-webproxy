@@ -13,65 +13,18 @@
  */
 
 // if buffer is larger than ~ 200KB, may have to put buffers in heap (dynamic)
-#ifndef WEBPROXY_H_
-#define WEBPROXY_H_
 
-#define WEBPROXY_BUFFER_SIZE 1048576 // Size of buffers, in bytes (1MB)
-#define WEBPROXY_NUM_CONNECTION_THREADS 8 // maximum number of client connections
+#ifndef NETWORKING_WEBPROXY_H_
+#define NETWORKING_WEBPROXY_H_
 
-using namespace std;
-
-void SignalHandler(int signal); // signal handler for WebProxy class
-void DateTimeRFC(char * buf); // append date and time (RFC 822) to buffer
-size_t ReceiveMessage(int, char *, struct PThreadResources *);
-void InitReqRecStructs(char*, struct RequestMessage*, struct ResponseMessage*);
-void * AcceptConnection(void * sharedResources); // PThread function, services clients
-
-// data structs for HTML header sections
-struct RequestMessage
-{
-  char method[32]; // GET,HEAD,POST
-  char uri[256]; // /,
-  char httpVersion[32]; // e.g. HTTP/1.1
-  char connection[32]; // keep-alive, close
-};
-struct ResponseMessage
-{
-  char httpVersion[32]; // e.g. HTTP/1.1
-  unsigned char statusCode; // e.g. 200
-  char connection[32]; // keep-alive, close
-  char content[32]; // e.g. "text/css"
-};
-// one struct's members are shared among PThreads
-struct PThreadResources {
-  pthread_mutex_t sock_mx, file_mx, dir_mx, regex_mx, cout_mx;
-  int sock; // server socket
-  ifstream ifs;
-  //FILE * file;
-  //DIR * directory;
-  //struct dirent *dir;
-  regex httpHeaderRegex; // checks HTTP method, URI, and HTTP version
-};
 //== WebProxy, object contains parent sockets, pthreads create client socket
 class WebProxy
 {
 public:
-  WebProxy(unsigned short portNumber, );
+  WebProxy(int port_number, int max_mumbers_threads);
   ~WebProxy();
 protected:
-  
 private:
-  bool proceed = true;
-  struct PThreadResources * sharedResources;
-  pthread_t httpConnections[WEBPROXY_NUM_CONNECTION_THREADS];
-  unsigned short portNum; // port to listen on
-  struct sockaddr_in serverAddr; // server's addr
-  int optval; // flag value for setsockopt
-
-  void Initialize();
-  bool CreateSocket();
-  bool BindSocket();
-  void StartHTTPService();
-  void StopHTTPService();
+  bool proceed;
 };
-#endif  // WEBPROXY_H_
+#endif  // NETWORKING_WEBPROXY_H_

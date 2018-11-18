@@ -31,7 +31,7 @@ clean :
 
 #== Run: test compiled binary file with argument
 test : $(NAME)
-	./$(NAME) 8888 &
+	./$(NAME) 8888 60 &
 
 #== Recycle: remove made files, compile, then run test recipe
 recycle : $(DEPENDENCIES)

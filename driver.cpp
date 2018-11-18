@@ -2,7 +2,7 @@
 #include "webproxy.h"
 
 int main(int argc, char **argv) {
-  if (argc != 2) {
+  if (argc != 3) {
     cout << argc << endl;
     cout <<
       "Invalid number of additional arguments, please enter one number" <<
