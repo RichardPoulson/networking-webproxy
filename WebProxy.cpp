@@ -1,6 +1,6 @@
-#include "WebProxy.h"
+#include "webproxy.h"
 
-WebProxy::WebProxy()
+WebProxy::WebProxy(int port_num, int server_timeout)
 {
 }
 
@@ -8,6 +8,8 @@ WebProxy::WebProxy()
 WebProxy::~WebProxy()
 {
 }
+
+const int WebProxy::get_max_num_threads() { return WebProxy::kMaxNumThreads; }
 
 // Listen for HTTP requests from network hosts
 bool WebProxy::ListenHTTPClients()
@@ -45,4 +47,20 @@ int WebProxy::RelayData()
 {
 	// TODO: Add your implementation code here.
 	return 0;
+}
+
+
+// Create a socket used to receive HTTP requests.
+bool WebProxy::CreateSocket()
+{
+	// TODO: Add your implementation code here.
+	return false;
+}
+
+
+// Bind the socket that will be used to receive HTTP requests.
+bool WebProxy::BindSocket()
+{
+	// TODO: Add your implementation code here.
+	return false;
 }

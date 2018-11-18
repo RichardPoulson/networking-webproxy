@@ -4,7 +4,7 @@
 class WebProxy
 {
 public:
-	WebProxy();
+	WebProxy(int, int);
 	virtual ~WebProxy();
 	const static int get_max_num_threads();
 private:
@@ -22,5 +22,9 @@ protected:
 	int ForwardRequest();
 	// Relay the data from the HTTP web server to the client.
 	int RelayData();
+	// Create a socket used to receive HTTP requests.
+	virtual bool CreateSocket();
+	// Bind the socket that will be used to receive HTTP requests.
+	virtual bool BindSocket();
 };
 #endif // NETWORKING_WEBPROXY_H_

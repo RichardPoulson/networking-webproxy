@@ -30,4 +30,12 @@
 *.exe
 *.out
 *.app
-.vs/networking_webproxy/v15/Browse.VC.opendb
+*.opendb
+*.suo
+*.db
+.vs/networking_webproxy/v15/.suo
+*.db
+.vs/networking_webproxy/v15/.suo
+*.db
+.vs/networking_webproxy/v15/Browse.VC.db
+*.pdb

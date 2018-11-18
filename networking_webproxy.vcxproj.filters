@@ -18,18 +18,12 @@
     <ClCompile Include="driver.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="webserver.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="WebProxy.cpp">
+    <ClCompile Include="webproxy.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="webserver.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="WebProxy.h">
+    <ClInclude Include="webproxy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
