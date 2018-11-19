@@ -31,3 +31,9 @@
 *.out
 *.app
 .vs/networking_webproxy/v15/Browse.VC.opendb
+/Debug/
+
+# Mac OS
+.DS_Store
+*.suo
+.vs/networking_webproxy/v15/.suo
