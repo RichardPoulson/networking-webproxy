@@ -6,10 +6,14 @@
 // Description : Hello World in C++, Ansi-style
 //============================================================================
 
-#include <iostream>
-using namespace std;
+#include <csignal>
+
+#include "webproxy.h"
+#include "webproxy_namespace.h"
 
 int main() {
-	cout << "!!!Hello World!!!" << endl; // prints !!!Hello World!!!
+	signal(SIGINT, webproxy_space::SignalHandler);
+	std::cout << "!!!Hello World!!!" << std::endl; // prints !!!Hello World!!!
+	WebProxy my_web_proxy(8008, 60);
 	return 0;
 }
