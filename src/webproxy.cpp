@@ -14,8 +14,9 @@ WebProxy::WebProxy(int port_num, int timeout) {
 	this->sock_ = 0;
 	this->port_number_ = 0;
 	this->continue_ = true;
-	this->reuse_socket_addr_ = 1;
+	this->on_ = 1;
 	this->shared_resources_ = new struct webproxy_space::SharedResources();
+	this->since_last_activity_ = std::time(nullptr);
 	StartHTTPServices();
 }
 
@@ -34,7 +35,7 @@ bool WebProxy::CreateBindSocket() {
 	}
 	//  Allows bind to reuse socket address (if supported)
 	setsockopt(this->sock_, SOL_SOCKET, SO_REUSEADDR,
-	    (const void *)&reuse_socket_addr_, sizeof(int));
+	    (const void *)&on_, sizeof(int));
 	//  Define the server's Internet address
 	bzero((char *) &server_addr_, sizeof(server_addr_));
 	server_addr_.sin_family = AF_INET;
@@ -49,9 +50,13 @@ bool WebProxy::CreateBindSocket() {
 
 void WebProxy::StartHTTPServices() {
 	pthread_mutex_lock(&this->shared_resources_->continue_mx); //== MUTEX
-	std::cout << this->continue_ << std::endl;
 	while (this->continue_ == true) {
 		pthread_mutex_unlock(&this->shared_resources_->continue_mx); //== UNLOCK
+		if (std::difftime(std::time(nullptr), this->since_last_activity_) > 3) {
+			pthread_mutex_lock(&this->shared_resources_->continue_mx); //== MUTEX
+			this->continue_ = false;
+			pthread_mutex_unlock(&this->shared_resources_->continue_mx); //== UNLOCK
+		}
 		pthread_mutex_lock(&this->shared_resources_->continue_mx); //== MUTEX
 	}
 	pthread_mutex_unlock(&this->shared_resources_->continue_mx); //== UNLOCK

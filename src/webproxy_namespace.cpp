@@ -7,15 +7,12 @@
 
 #include "webproxy_namespace.h"
 
-namespace webproxy_space {
-
-void SignalHandler(int sig)
+void webproxy_space::SignalHandler(int sig)
 {
   printf("User pressed Ctrl+C\n");
-  exit(1);
 }
 
-SharedResources::SharedResources() {
+webproxy_space::SharedResources::SharedResources() {
 	pthread_mutex_init(&this->file_mx, NULL);
 	pthread_mutex_init(&this->map_mx, NULL);
 	pthread_mutex_init(&this->queue_mx, NULL);
@@ -25,7 +22,7 @@ SharedResources::SharedResources() {
 			"^(GET|HEAD|POST) (\\/|(\\/.*)+\\.(html|txt|png|gif|jpg|css|js)) HTTP\\/\\d\\.\\d\r\n");
 }
 
-SharedResources::~SharedResources() {
+webproxy_space::SharedResources::~SharedResources() {
 	pthread_mutex_destroy(&this->file_mx);
 	pthread_mutex_destroy(&this->map_mx);
 	pthread_mutex_destroy(&this->queue_mx);
@@ -33,5 +30,3 @@ SharedResources::~SharedResources() {
 	pthread_mutex_destroy(&this->continue_mx);
 	std::cout << "PThread Mutexes destroyed properly" << std::endl;
 }
-
-} /* namespace webproxy_space */

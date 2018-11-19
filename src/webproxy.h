@@ -3,6 +3,8 @@
  *
  *  Created on: Nov 18, 2018
  *      Author: richard
+ *
+ *  https://www.ibm.com/support/knowledgecenter/en/ssw_ibm_i_73/rzab6/xnonblock.htm
  */
 
 #ifndef NETWORKING_WEBPROXY_H_
@@ -25,8 +27,9 @@
 #include <errno.h> //  "C Errors", errno
 #include <regex> //  Regular expressions
 #include <pthread.h> // process threads,
-#include <time.h> //  time_t, tm,
+#include <ctime> //  time_t, tm,
 #include <stack> //  stack of process threads
+#include <sys/ioctl.h> // set socket to be nonbinding
 
 #include "webproxy_namespace.h"
 
@@ -39,9 +42,10 @@ private:
 	int sock_; // file descriptor for server socket
 	struct sockaddr_in server_addr_; // server's addr
 	int port_number_; // port number of the server socket
-	int reuse_socket_addr_; // used by setsockopt to tell it to reuse socket address
+	int on_; // used by setsockopt to tell it to reuse socket address
 	bool continue_;
 	struct webproxy_space::SharedResources * shared_resources_;
+	std::time_t since_last_activity_;
 
 	bool CreateBindSocket();
 	void StartHTTPServices();
