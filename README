@@ -1,0 +1,13 @@
+Richard Poulson
+Programming Assignment 3: WebProxy
+
+I had a lot of trouble with this assignment, I was just able to get
+threading to work before the assignment was due.
+
+To make this program, simply navigate to the root of this folder
+and enter the command "make recycle".  This will automatically do a
+clean, make the binary, and then run "./pa3 8888 15", which means
+run on port 8888 with a 15 second timeout_
+
+I was able to get the listening socket to time out, and the program
+will send a bad message error if the method isn't GET
