@@ -42,6 +42,7 @@
 #include <sys/ioctl.h> // set socket to be nonbinding
 #include <queue>
 #include <map> // map of string to regex
+#include <unordered_set> // unordered set of blacklisted sites
 
 // PThread function
 void * AcceptConnection(void * shared_resources);
@@ -54,6 +55,7 @@ ssize_t SendWholeMessage(int sock, char * buf, int buf_size);
 
 // struct
 struct CachedPage {
+	pthread_mutex_t file_mx;
 	FILE * file;
 	char filename[256];
 	long file_size = 0;
@@ -64,6 +66,7 @@ struct CachedPage {
 // data structure dealing with HTTP request messages
 struct RequestMessage
 {
+	int clients_sd;
 	std::string method; // GET,HEAD,POST
 	std::string request; // /,
 	std::string request_line;
@@ -77,11 +80,14 @@ struct RequestMessage
 };
 // struct designed to be used between the WebProxy object and pthreads
 struct SharedResources {
+	int ttl; // time-to-live for the cached pages
 	int num_cached_pages = 0;
 	pthread_mutex_t file_mx, map_mx, queue_mx, cout_mx, continue_mx;
 	std::map<std::string, std::regex> regex_map; // map from string to regex
 	std::map<std::string, struct CachedPage *> cached_page_map;
-	std::queue<int> client_queue;
+	std::map<std::string, struct addrinfo *> cached_addrinfo_map;
+	std::queue<struct RequestMessage> request_queue;//client_queue;
+	std::unordered_set<std::string> blacklist_sites;
 	SharedResources();
 	virtual ~SharedResources();
 };
@@ -90,9 +96,10 @@ struct SharedResources {
 // The first argument is
 class WebProxy {
 public:
-	WebProxy(char * port_num, int timeout = 60, std::string http_addr = "localhost");
+	WebProxy(char * port_num, int timeout = 60, int ttl = 5, std::string http_addr = "localhost");
 	virtual ~WebProxy();
 private:
+	int ttl_; // time-to-live for the cached pages
 	pthread_t proxy_connections[WEBPROXY_NUM_PTHREADS];
 	pthread_attr_t pthread_attr; // attributes for the pthreads
   void * status;
